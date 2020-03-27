@@ -5,4 +5,4 @@
 /vendor/
 config/development.config.php
 data/cache/*
-.idea
+.idea/
