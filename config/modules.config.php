@@ -6,6 +6,7 @@
  * The previous config file has been stored in ./config/modules.config.old
  */
 return [
+    'Laminas\Session',
     'Zend\Cache',
     'Zend\Form',
     'Laminas\\Cache',
