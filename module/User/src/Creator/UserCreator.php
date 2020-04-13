@@ -3,7 +3,10 @@
 namespace User\Creator;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use User\Entity\User;
+use Laminas\Crypt\Password\Bcrypt;
 
 class UserCreator
 {
@@ -19,11 +22,14 @@ class UserCreator
      * @param string $email
      * @param string $password
      * @return User
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function createUser(string $email, string $password): User
     {
+        $crypt = new Bcrypt();
+        $password = $crypt->create($password);
+
         $user = $this->createUserEntity($email, $password);
 
         $this->entityManager->persist($user);

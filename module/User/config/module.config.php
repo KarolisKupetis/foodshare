@@ -2,10 +2,12 @@
 
 namespace User;
 
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Laminas\ApiTools\MvcAuth\Factory\AuthenticationServiceFactory;
 use Laminas\ApiTools\OAuth2\Provider\UserId\AuthenticationService;
 use Laminas\ServiceManager\AbstractFactory\ConfigAbstractFactory;
+use User\Creator\UserCreator;
 use User\Service\AuthManager;
 use User\Repository\UserRepository;
 use User\Repository\AbstractRepositoryFactory;
@@ -13,13 +15,21 @@ use User\Service\UserService;
 
 return [
     ConfigAbstractFactory::class => [
+        EntityManager::class => [],
+
+        UserCreator::class => [
+            EntityManager::class
+        ],
+
         UserService::class => [
-            UserRepository::class
+            UserRepository::class,
+            UserCreator::class,
         ],
 
         AuthManager::class => [
             UserService::class,
         ],
+
     ],
     'service_manager' => [
         'abstract_factories' => [

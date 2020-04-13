@@ -20,9 +20,7 @@ return [
         // Session data will be stored on server maximum for 30 days.
         'gc_maxlifetime'     => 60*60*24*30,
     ],
-    // Session manager configuration.
     'session_manager' => [
-        // Session validators (used for security).
         'validators' => [
             RemoteAddr::class,
             HttpUserAgent::class,
