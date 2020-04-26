@@ -1,19 +1,13 @@
 <?php
-
-use FsUiApi\V1\Rest\Authentication\AuthenticationResource;
-use FsUiApi\V1\Rest\Authentication\AuthenticationResourceFactory;
-use FsUiApi\V1\Rest\UserProfile\UserProfileResource;
-use FsUiApi\V1\Rest\UserProfile\UserProfileResourceFactory;
-use Laminas\ServiceManager\AbstractFactory\ConfigAbstractFactory;
-
 return [
     'service_manager' => [
         'abstract_factories' => [
-            0 => ConfigAbstractFactory::class,
+            0 => \Laminas\ServiceManager\AbstractFactory\ConfigAbstractFactory::class,
         ],
         'factories' => [
-            AuthenticationResource::class => AuthenticationResourceFactory::class,
-            UserProfileResource::class => UserProfileResourceFactory::class,
+            \FsUiApi\V1\Rest\Authentication\AuthenticationResource::class => \FsUiApi\V1\Rest\Authentication\AuthenticationResourceFactory::class,
+            \FsUiApi\V1\Rest\UserProfile\UserProfileResource::class => \FsUiApi\V1\Rest\UserProfile\UserProfileResourceFactory::class,
+            \FsUiApi\V1\Rest\Publication\PublicationResource::class => \FsUiApi\V1\Rest\Publication\PublicationResourceFactory::class,
         ],
     ],
     'router' => [
@@ -36,12 +30,22 @@ return [
                     ],
                 ],
             ],
+            'fs-ui-api.rest.publication' => [
+                'type' => 'Segment',
+                'options' => [
+                    'route' => '/publication[/:publication_id]',
+                    'defaults' => [
+                        'controller' => 'FsUiApi\\V1\\Rest\\Publication\\Controller',
+                    ],
+                ],
+            ],
         ],
     ],
     'api-tools-versioning' => [
         'uri' => [
             0 => 'fs-ui-api.rest.authentication',
             1 => 'fs-ui-api.rest.user-profile',
+            2 => 'fs-ui-api.rest.publication',
         ],
     ],
     'api-tools-rest' => [
@@ -88,11 +92,35 @@ return [
             'collection_class' => \FsUiApi\V1\Rest\UserProfile\UserProfileCollection::class,
             'service_name' => 'UserProfile',
         ],
+        'FsUiApi\\V1\\Rest\\Publication\\Controller' => [
+            'listener' => \FsUiApi\V1\Rest\Publication\PublicationResource::class,
+            'route_name' => 'fs-ui-api.rest.publication',
+            'route_identifier_name' => 'publication_id',
+            'collection_name' => 'publication',
+            'entity_http_methods' => [
+                0 => 'GET',
+                1 => 'PATCH',
+                2 => 'PUT',
+                3 => 'DELETE',
+                4 => 'POST',
+            ],
+            'collection_http_methods' => [
+                0 => 'GET',
+                1 => 'POST',
+            ],
+            'collection_query_whitelist' => [],
+            'page_size' => 25,
+            'page_size_param' => null,
+            'entity_class' => \FsUiApi\V1\Rest\Publication\PublicationEntity::class,
+            'collection_class' => \FsUiApi\V1\Rest\Publication\PublicationCollection::class,
+            'service_name' => 'Publication',
+        ],
     ],
     'api-tools-content-negotiation' => [
         'controllers' => [
             'FsUiApi\\V1\\Rest\\Authentication\\Controller' => 'Json',
             'FsUiApi\\V1\\Rest\\UserProfile\\Controller' => 'HalJson',
+            'FsUiApi\\V1\\Rest\\Publication\\Controller' => 'Json',
         ],
         'accept_whitelist' => [
             'FsUiApi\\V1\\Rest\\Authentication\\Controller' => [
@@ -101,6 +129,11 @@ return [
                 2 => 'application/json',
             ],
             'FsUiApi\\V1\\Rest\\UserProfile\\Controller' => [
+                0 => 'application/vnd.fs-ui-api.v1+json',
+                1 => 'application/hal+json',
+                2 => 'application/json',
+            ],
+            'FsUiApi\\V1\\Rest\\Publication\\Controller' => [
                 0 => 'application/vnd.fs-ui-api.v1+json',
                 1 => 'application/hal+json',
                 2 => 'application/json',
@@ -114,6 +147,11 @@ return [
             'FsUiApi\\V1\\Rest\\UserProfile\\Controller' => [
                 0 => 'application/vnd.fs-ui-api.v1+json',
                 1 => 'application/json',
+            ],
+            'FsUiApi\\V1\\Rest\\Publication\\Controller' => [
+                0 => 'application/vnd.fs-ui-api.v1+json',
+                1 => 'application/json',
+                2 => 'multipart/form-data',
             ],
         ],
     ],
@@ -141,6 +179,18 @@ return [
                 'entity_identifier_name' => 'id',
                 'route_name' => 'fs-ui-api.rest.user-profile',
                 'route_identifier_name' => 'user_id',
+                'is_collection' => true,
+            ],
+            \FsUiApi\V1\Rest\Publication\PublicationEntity::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'fs-ui-api.rest.publication',
+                'route_identifier_name' => 'publication_id',
+                'hydrator' => \Laminas\Hydrator\ObjectProperty::class,
+            ],
+            \FsUiApi\V1\Rest\Publication\PublicationCollection::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'fs-ui-api.rest.publication',
+                'route_identifier_name' => 'publication_id',
                 'is_collection' => true,
             ],
         ],
@@ -171,6 +221,9 @@ return [
         ],
         'FsUiApi\\V1\\Rest\\UserProfile\\Controller' => [
             'input_filter' => 'FsUiApi\\V1\\Rest\\UserProfile\\Validator',
+        ],
+        'FsUiApi\\V1\\Rest\\Publication\\Controller' => [
+            'input_filter' => 'FsUiApi\\V1\\Rest\\Publication\\Validator',
         ],
     ],
     'input_filter_specs' => [
@@ -236,6 +289,40 @@ return [
                 ],
                 'name' => 'password',
                 'error_message' => 'Invalid password',
+            ],
+            2 => [
+                'required' => false,
+                'validators' => [],
+                'filters' => [],
+                'name' => 'fullName',
+            ],
+            3 => [
+                'required' => false,
+                'validators' => [],
+                'filters' => [],
+                'name' => 'number',
+            ],
+        ],
+        'FsUiApi\\V1\\Rest\\Publication\\Validator' => [
+            0 => [
+                'required' => true,
+                'validators' => [
+                    0 => [
+                        'name' => \Laminas\Validator\File\IsImage::class,
+                        'options' => [],
+                    ],
+                ],
+                'filters' => [
+                    0 => [
+                        'name' => \Laminas\Filter\File\RenameUpload::class,
+                        'options' => [
+                            'randomize' => true,
+                            'target' => 'data\\images',
+                        ],
+                    ],
+                ],
+                'name' => 'image',
+                'type' => \Laminas\InputFilter\FileInput::class,
             ],
         ],
     ],

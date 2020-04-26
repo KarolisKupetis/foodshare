@@ -37,9 +37,11 @@ class UserProfileResource extends AbstractResourceListener
     {
        $email = $data->email;
        $password = $data->password;
+       $fullName = $data->fullName ?? '';
+       $number = $data->number ?? '';
 
         try {
-            $this->userService->createUser($email, $password);
+            $this->userService->createUser($email, $password, $fullName, $number);
         } catch (NonUniqueResultException $e) {
            return new ApiProblem(409, 'Email already used');
         } catch (OptimisticLockException $e) {

@@ -50,6 +50,16 @@ class UserService
     }
 
     /**
+     * @param int $id
+     * @return User|null
+     * @throws NonUniqueResultException
+     */
+    public function findById(int $id): ?User
+    {
+        return $this->repository->findById($id);
+    }
+
+    /**
      * @param string $email
      * @param string $password
      * @return User
@@ -58,12 +68,12 @@ class UserService
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function createUser(string $email, string $password): User
+    public function createUser(string $email, string $password, string $fullName, string $number): User
     {
         if ($this->findByEmailAsArray($email)) {
             throw new AlreadyExistsException('Email already in use');
         }
 
-        return $this->userCreator->createUser($email, $password);
+        return $this->userCreator->createUser($email, $password, $fullName, $number);
     }
 }

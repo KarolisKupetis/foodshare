@@ -21,16 +21,18 @@ class UserCreator
     /**
      * @param string $email
      * @param string $password
+     * @param string $fullName
+     * @param string $number
      * @return User
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function createUser(string $email, string $password): User
+    public function createUser(string $email, string $password, string $fullName, string $number): User
     {
         $crypt = new Bcrypt();
         $password = $crypt->create($password);
 
-        $user = $this->createUserEntity($email, $password);
+        $user = $this->createUserEntity($email, $password, $fullName, $number);
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
@@ -41,13 +43,18 @@ class UserCreator
     /**
      * @param $email
      * @param $password
+     * @param string $fullName
+     * @param string $number
      * @return User
      */
-    private function createUserEntity($email, $password): User
+    private function createUserEntity(string $email, string $password, string $fullName, string $number): User
     {
         $user = new User();
         $user->setEmail($email);
         $user->setPassword($password);
+        $user->setFullName($fullName);
+        $user->setNumber($number);
+
 
         return $user;
     }

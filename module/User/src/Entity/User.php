@@ -2,7 +2,7 @@
 namespace User\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Gedmo\Mapping\Annotation as Gedmo;
 /**
  * @ORM\Entity(repositoryClass="User\Repository\UserRepository")
  * @ORM\Table(name="users")
@@ -19,24 +19,30 @@ class User
     private $id;
 
     /**
-     * @ORM\Column(name="u_email")
+     * @ORM\Column(name="u_email", type="string")
      */
     protected $email;
 
     /**
-     * @ORM\Column(name="u_full_name")
+     * @ORM\Column(name="u_full_name", type="string")
      */
     protected $fullName;
 
     /**
-     * @ORM\Column(name="u_password")
+     * @ORM\Column(name="u_password", type="string")
      */
     protected $password;
 
     /**
-     * @ORM\Column(name="u_date_created")
+     * @ORM\Column(name="u_date_created", type="datetime")
+     * @Gedmo\Timestampable(on="create")
      */
     protected $dateCreated;
+
+    /**
+     * @ORM\Column(name="u_number", type="string")
+     */
+    protected $number;
 
     /**
      * @return integer
@@ -119,4 +125,21 @@ class User
     {
         $this->dateCreated = $dateCreated;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getNumber()
+    {
+        return $this->number;
+    }
+
+    /**
+     * @param mixed $number
+     */
+    public function setNumber($number): void
+    {
+        $this->number = $number;
+    }
+
 }
