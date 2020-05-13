@@ -26,6 +26,10 @@ class Publication
         self::PUBLICATION_EXPIRED
     ];
 
+    public const CATEGORY_VEG = 'veg';
+    public const CATEGORY_FULL = 'full';
+    public const CATEGORY_INGREDIENT = 'ingredient';
+
     /**
      * @ORM\Id
      * @var int
@@ -55,16 +59,17 @@ class Publication
     private $status = self::PUBLICATION_ACTIVE;
 
     /**
+     * One publication has one category
+     * @ORM\OneToOne(targetEntity="Publication\Entity\Category")
+     * @ORM\JoinColumn(name="p_id", referencedColumnName="id")
+     */
+    private $category = self::CATEGORY_INGREDIENT;
+
+    /**
      * @var string
      * @ORM\Column(type="string", name="p_description")
      */
     private $description;
-
-    /**
-     * @var string
-     * @ORM\Column(type="string", name="p_latitude")
-     */
-    private $latitude;
 
     /**
      * One product has many features. This is the inverse side.
@@ -87,28 +92,6 @@ class Publication
     {
         $this->images = $images;
     }
-
-    /**
-     * @return string
-     */
-    public function getLatitude(): string
-    {
-        return $this->latitude;
-    }
-
-    /**
-     * @param string $latitude
-     */
-    public function setLatitude(string $latitude): void
-    {
-        $this->latitude = $latitude;
-    }
-
-    /**
-     * @var string
-     * @ORM\Column(type="string", name="p_longitude")
-     */
-    private $longitude;
 
     /**
      * @return int
@@ -193,16 +176,17 @@ class Publication
     /**
      * @return string
      */
-    public function getLongitude(): string
+    public function getCategory(): string
     {
-        return $this->longitude;
+        return $this->category;
     }
 
     /**
-     * @param string $longitude
+     * @param string $category
      */
-    public function setLongitude(string $longitude): void
+    public function setCategory(string $category): void
     {
-        $this->longitude = $longitude;
+        $this->category = $category;
     }
+
 }

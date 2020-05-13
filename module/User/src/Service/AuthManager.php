@@ -5,8 +5,6 @@ use Doctrine\ORM\NonUniqueResultException;
 use Laminas\Crypt\Password\Bcrypt;
 use Laminas\Session\Container;
 use Exception;
-use User\Entity\User;
-use User\Exceptions\AlreadyExistsException;
 use User\Exceptions\InvalidDataException;
 use User\Exceptions\LoggedInException;
 use User\Exceptions\NonExistException;
@@ -38,7 +36,7 @@ class AuthManager
     public function login(string $email, string $password): ?array
     {
         if ($this->session->user) {
-            throw new LoggedInException('Already logged in');
+           return $this->session->user;
         }
 
         $user = $this->userService->findByEmailAsArray($email);
@@ -66,5 +64,13 @@ class AuthManager
     public function logout(): void
     {
         unset($this->session->user);
+    }
+
+    public function getIfLoggedIn() {
+        if ($this->session->user) {
+            return $this->session->user;
+        }
+
+        return null;
     }
 }

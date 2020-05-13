@@ -9,6 +9,7 @@ use Publication\Creator\ImageCreator;
 use Publication\Creator\PublicationCreator;
 use Publication\Repository\ImageRepository;
 use Publication\Repository\PublicationRepository;
+use Publication\Service\ImageService;
 use Publication\Service\PublicationsService;
 use Publication\Shared\HierarchyArrayHydrator;
 use User\Repository\AbstractRepositoryFactory;
@@ -22,6 +23,7 @@ return [
           UserService::class,
           EntityManager::class,
           ImageCreator::class,
+          PublicationRepository::class,
         ],
 
         ImageCreator::class => [
@@ -31,6 +33,10 @@ return [
         PublicationsService::class => [
             PublicationRepository::class,
             PublicationCreator::class,
+        ],
+
+        ImageService::class => [
+            ImageRepository::class
         ],
     ],
     'service_manager' => [

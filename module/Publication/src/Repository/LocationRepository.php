@@ -4,9 +4,8 @@ namespace Publication\Repository;
 
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Internal\Hydration\ArrayHydrator;
 
-class ImageRepository  extends EntityRepository
+class LocationRepository  extends EntityRepository
 {
     /**
      * @param int $publicationId

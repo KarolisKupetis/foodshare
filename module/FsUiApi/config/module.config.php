@@ -8,6 +8,7 @@ return [
             \FsUiApi\V1\Rest\Authentication\AuthenticationResource::class => \FsUiApi\V1\Rest\Authentication\AuthenticationResourceFactory::class,
             \FsUiApi\V1\Rest\UserProfile\UserProfileResource::class => \FsUiApi\V1\Rest\UserProfile\UserProfileResourceFactory::class,
             \FsUiApi\V1\Rest\Publication\PublicationResource::class => \FsUiApi\V1\Rest\Publication\PublicationResourceFactory::class,
+            \FsUiApi\V1\Rest\Image\ImageResource::class => \FsUiApi\V1\Rest\Image\ImageResourceFactory::class,
         ],
     ],
     'router' => [
@@ -39,6 +40,15 @@ return [
                     ],
                 ],
             ],
+            'fs-ui-api.rest.image' => [
+                'type' => 'Segment',
+                'options' => [
+                    'route' => '/images[/:image_id]',
+                    'defaults' => [
+                        'controller' => 'FsUiApi\\V1\\Rest\\Image\\Controller',
+                    ],
+                ],
+            ],
         ],
     ],
     'api-tools-versioning' => [
@@ -46,6 +56,7 @@ return [
             0 => 'fs-ui-api.rest.authentication',
             1 => 'fs-ui-api.rest.user-profile',
             2 => 'fs-ui-api.rest.publication',
+            3 => 'fs-ui-api.rest.image',
         ],
     ],
     'api-tools-rest' => [
@@ -60,7 +71,8 @@ return [
                 2 => 'GET',
             ],
             'collection_http_methods' => [
-                0 => 'POST',
+                0 => 'GET',
+                1 => 'POST',
             ],
             'collection_query_whitelist' => [],
             'page_size' => 25,
@@ -115,18 +127,38 @@ return [
             'collection_class' => \FsUiApi\V1\Rest\Publication\PublicationCollection::class,
             'service_name' => 'Publication',
         ],
+        'FsUiApi\\V1\\Rest\\Image\\Controller' => [
+            'listener' => \FsUiApi\V1\Rest\Image\ImageResource::class,
+            'route_name' => 'fs-ui-api.rest.image',
+            'route_identifier_name' => 'image_id',
+            'collection_name' => 'image',
+            'entity_http_methods' => [
+                0 => 'GET',
+            ],
+            'collection_http_methods' => [
+                0 => 'GET',
+            ],
+            'collection_query_whitelist' => [],
+            'page_size' => 25,
+            'page_size_param' => null,
+            'entity_class' => \FsUiApi\V1\Rest\Image\ImageEntity::class,
+            'collection_class' => \FsUiApi\V1\Rest\Image\ImageCollection::class,
+            'service_name' => 'Image',
+        ],
     ],
     'api-tools-content-negotiation' => [
         'controllers' => [
             'FsUiApi\\V1\\Rest\\Authentication\\Controller' => 'Json',
             'FsUiApi\\V1\\Rest\\UserProfile\\Controller' => 'HalJson',
             'FsUiApi\\V1\\Rest\\Publication\\Controller' => 'Json',
+            'FsUiApi\\V1\\Rest\\Image\\Controller' => 'HalJson',
         ],
         'accept_whitelist' => [
             'FsUiApi\\V1\\Rest\\Authentication\\Controller' => [
                 0 => 'application/vnd.fs-ui-api.v1+json',
                 1 => 'application/hal+json',
                 2 => 'application/json',
+                3 => 'multipart/form-data',
             ],
             'FsUiApi\\V1\\Rest\\UserProfile\\Controller' => [
                 0 => 'application/vnd.fs-ui-api.v1+json',
@@ -134,6 +166,11 @@ return [
                 2 => 'application/json',
             ],
             'FsUiApi\\V1\\Rest\\Publication\\Controller' => [
+                0 => 'application/vnd.fs-ui-api.v1+json',
+                1 => 'application/hal+json',
+                2 => 'application/json',
+            ],
+            'FsUiApi\\V1\\Rest\\Image\\Controller' => [
                 0 => 'application/vnd.fs-ui-api.v1+json',
                 1 => 'application/hal+json',
                 2 => 'application/json',
@@ -143,6 +180,7 @@ return [
             'FsUiApi\\V1\\Rest\\Authentication\\Controller' => [
                 0 => 'application/vnd.fs-ui-api.v1+json',
                 1 => 'application/json',
+                2 => 'multipart/form-data',
             ],
             'FsUiApi\\V1\\Rest\\UserProfile\\Controller' => [
                 0 => 'application/vnd.fs-ui-api.v1+json',
@@ -152,6 +190,10 @@ return [
                 0 => 'application/vnd.fs-ui-api.v1+json',
                 1 => 'application/json',
                 2 => 'multipart/form-data',
+            ],
+            'FsUiApi\\V1\\Rest\\Image\\Controller' => [
+                0 => 'application/vnd.fs-ui-api.v1+json',
+                1 => 'application/json',
             ],
         ],
     ],
@@ -193,6 +235,18 @@ return [
                 'route_identifier_name' => 'publication_id',
                 'is_collection' => true,
             ],
+            \FsUiApi\V1\Rest\Image\ImageEntity::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'fs-ui-api.rest.image',
+                'route_identifier_name' => 'image_id',
+                'hydrator' => \Laminas\Hydrator\ObjectProperty::class,
+            ],
+            \FsUiApi\V1\Rest\Image\ImageCollection::class => [
+                'entity_identifier_name' => 'id',
+                'route_name' => 'fs-ui-api.rest.image',
+                'route_identifier_name' => 'image_id',
+                'is_collection' => true,
+            ],
         ],
     ],
     'api-tools-mvc-auth' => [
@@ -223,6 +277,7 @@ return [
             'input_filter' => 'FsUiApi\\V1\\Rest\\UserProfile\\Validator',
         ],
         'FsUiApi\\V1\\Rest\\Publication\\Controller' => [
+            'GET' => 'FsUiApi\\V1\\Rest\\Publication\\Validator\\Get',
             'input_filter' => 'FsUiApi\\V1\\Rest\\Publication\\Validator',
         ],
     ],
@@ -305,7 +360,7 @@ return [
         ],
         'FsUiApi\\V1\\Rest\\Publication\\Validator' => [
             0 => [
-                'required' => true,
+                'required' => false,
                 'validators' => [
                     0 => [
                         'name' => \Laminas\Validator\File\IsImage::class,
@@ -323,6 +378,32 @@ return [
                 ],
                 'name' => 'image',
                 'type' => \Laminas\InputFilter\FileInput::class,
+            ],
+        ],
+        'FsUiApi\\V1\\Rest\\Publication\\Validator\\Get' => [
+            0 => [
+                'required' => false,
+                'name' => 'latitude',
+                'continue_if_empty' => true,
+                'field_type' => 'string',
+            ],
+            1 => [
+                'required' => false,
+                'name' => 'longitude',
+                'continue_if_empty' => true,
+                'field_type' => 'string',
+            ],
+            3 => [
+                'required' => false,
+                'name' => 'user',
+                'continue_if_empty' => true,
+                'field_type' => 'string',
+            ],
+            4 => [
+                'required' => false,
+                'name' => 'category',
+                'continue_if_empty' => true,
+                'field_type' => 'string',
             ],
         ],
     ],

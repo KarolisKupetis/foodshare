@@ -41,7 +41,7 @@ class UserProfileResource extends AbstractResourceListener
        $number = $data->number ?? '';
 
         try {
-            $this->userService->createUser($email, $password, $fullName, $number);
+             $this->userService->createUser($email, $password, $fullName, $number);
         } catch (NonUniqueResultException $e) {
            return new ApiProblem(409, 'Email already used');
         } catch (OptimisticLockException $e) {
@@ -50,7 +50,9 @@ class UserProfileResource extends AbstractResourceListener
            return new ApiProblem(409, 'Email already used');
         }
 
-        return $this->authManager->login($email, $password);
+        $user = $this->authManager->login($email, $password);
+
+        return UserProfileEntity::fromLogin($user);
     }
 
     /**

@@ -62,7 +62,6 @@ class AuthAdapter implements AdapterInterface
         /** @var User $user */
         $user = $this->entityManager->getRepository(User::class)->findById($this->email);
 
-        // If there is no such user, return 'Identity Not Found' status.
         if ($user === null) {
             return new Result(
                 Result::FAILURE_IDENTITY_NOT_FOUND,
@@ -70,21 +69,16 @@ class AuthAdapter implements AdapterInterface
                 ['Invalid credentials.']);
         }
 
-        // Now we need to calculate hash based on user-entered password and compare
-        // it with the password hash stored in database.
         $bcrypt = new Bcrypt();
         $passwordHash = $user->getPassword();
 
         if ($bcrypt->verify($this->password, $passwordHash)) {
-            // Great! The password hash matches. Return user identity (email) to be
-            // saved in session for later use.
             return new Result(
                 Result::SUCCESS,
                 $this->email,
                 ['Authenticated successfully.']);
         }
 
-        // If password check didn't pass return 'Invalid Credential' failure status.
         return new Result(
             Result::FAILURE_CREDENTIAL_INVALID,
             null,
