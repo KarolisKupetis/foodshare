@@ -32,7 +32,6 @@ class Location
      */
     private $latitude;
 
-
     /**
      * @return string
      */
@@ -85,5 +84,21 @@ class Location
     public function setLongitude(string $longitude): void
     {
         $this->longitude = $longitude;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPublication()
+    {
+        return $this->publication;
+    }
+
+    /**
+     * @param mixed $publication
+     */
+    public function setPublication($publication): void
+    {
+        $this->publication = $publication;
     }
 }

@@ -4,9 +4,12 @@ namespace Publication;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Mapping\Entity;
 use Laminas\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 use Publication\Creator\ImageCreator;
+use Publication\Creator\LocationCreator;
 use Publication\Creator\PublicationCreator;
+use Publication\Repository\CategoryRepository;
 use Publication\Repository\ImageRepository;
 use Publication\Repository\PublicationRepository;
 use Publication\Service\ImageService;
@@ -24,9 +27,15 @@ return [
           EntityManager::class,
           ImageCreator::class,
           PublicationRepository::class,
+          LocationCreator::class,
+          CategoryRepository::class
         ],
 
         ImageCreator::class => [
+            EntityManager::class,
+        ],
+
+        LocationCreator::class => [
             EntityManager::class,
         ],
 

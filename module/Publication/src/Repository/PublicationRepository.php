@@ -33,7 +33,11 @@ class PublicationRepository extends EntityRepository
             ->select()
             ->addSelect('im')
             ->addSelect('us')
+            ->addSelect('cat')
+            ->addSelect('loc')
             ->leftJoin('p.images', 'im')
+            ->leftJoin('p.category', 'cat')
+            ->leftJoin('p.location', 'loc')
             ->leftJoin('p.user', 'us');
 
         if ($user) {
@@ -42,7 +46,8 @@ class PublicationRepository extends EntityRepository
         }
 
         if ($category) {
-            $query->andWhere("p.category = :category")
+            $category = Publication::shortToFull[$category];
+            $query->andWhere("cat.name = :category")
                 ->setParameter('category', $category);
         }
 
@@ -55,8 +60,12 @@ class PublicationRepository extends EntityRepository
             ->select()
             ->addSelect('im')
             ->addSelect('us')
+            ->addSelect('cat')
+            ->addSelect('loc')
             ->leftJoin('p.images', 'im')
             ->leftJoin('p.user', 'us')
+            ->leftJoin('p.category', 'cat')
+            ->leftJoin('p.location', 'loc')
             ->where('p.id = :id')
             ->setParameter('id', $id)
             ->getQuery()

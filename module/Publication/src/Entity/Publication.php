@@ -26,6 +26,22 @@ class Publication
         self::PUBLICATION_EXPIRED
     ];
 
+    public const shortToFull = [
+      'vegetable' => 'Vegetables',
+      'fruit' => 'Fruits',
+      'veg' => 'Vegetarian',
+      'full' => 'Meals',
+      'ingredient' => 'Ingreadients'
+    ];
+
+    public const fullToShort = [
+        'Vegetables' => 'vegetable',
+        'Fruits' => 'fruit',
+        'Vegetarian' => 'veg',
+        'Meals' => 'full',
+        'Ingreadients' => 'ingredient'
+    ];
+
     public const CATEGORY_VEG = 'veg';
     public const CATEGORY_FULL = 'full';
     public const CATEGORY_INGREDIENT = 'ingredient';
@@ -61,9 +77,9 @@ class Publication
     /**
      * One publication has one category
      * @ORM\OneToOne(targetEntity="Publication\Entity\Category")
-     * @ORM\JoinColumn(name="p_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="p_category", referencedColumnName="c_id")
      */
-    private $category = self::CATEGORY_INGREDIENT;
+    private $category;
 
     /**
      * @var string
@@ -76,6 +92,12 @@ class Publication
      * @ORM\OneToMany(targetEntity="Image", mappedBy="publication")
      */
     private $images;
+
+    /**
+     * One publication has One location.
+     * @ORM\OneToOne(targetEntity="Publication\Entity\Location", mappedBy="publication")
+     */
+    private $location;
 
     /**
      * @return Collection
@@ -174,19 +196,34 @@ class Publication
     }
 
     /**
-     * @return string
+     * @return mixed
      */
-    public function getCategory(): string
+    public function getCategory()
     {
         return $this->category;
     }
 
     /**
-     * @param string $category
+     * @param mixed $category
      */
-    public function setCategory(string $category): void
+    public function setCategory($category): void
     {
         $this->category = $category;
     }
 
+    /**
+     * @return Location
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
+    /**
+     * @param mixed $location
+     */
+    public function setLocation($location): void
+    {
+        $this->location = $location;
+    }
 }

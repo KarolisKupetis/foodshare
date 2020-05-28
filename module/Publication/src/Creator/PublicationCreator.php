@@ -4,6 +4,7 @@ namespace Publication\Creator;
 
 use Doctrine\ORM\EntityManager;
 use Publication\Entity\Publication;
+use Publication\Repository\CategoryRepository;
 use Publication\Repository\PublicationRepository;
 use User\Service\UserService;
 
@@ -21,17 +22,27 @@ class PublicationCreator
     /** @var PublicationRepository */
     private $publicationRepository;
 
+    /** @var LocationCreator */
+    private $locationCreator;
+
+    /** @var CategoryRepository */
+    private $categoryRepository;
+
     public function __construct(
         UserService $userService,
         EntityManager $entityManager,
         ImageCreator $imageCreator,
-        PublicationRepository $publicationRepository
+        PublicationRepository $publicationRepository,
+        LocationCreator $locationCreator,
+        CategoryRepository $categoryRepository
     )
     {
         $this->userService = $userService;
         $this->entityManager = $entityManager;
         $this->imageCreator = $imageCreator;
         $this->publicationRepository = $publicationRepository;
+        $this->locationCreator = $locationCreator;
+        $this->categoryRepository = $categoryRepository;
     }
 
     /**
@@ -46,6 +57,12 @@ class PublicationCreator
         $data['user'] = $this->userService->findById($data['user']);
 
         $publication = $this->createPublicationEntity($data);
+        $location = $this->locationCreator->createImage(['latitude' => $data['latitude'], 'longitude' => $data['longitude']]);
+        $category = $this->categoryRepository->findByName($data['category']);
+
+        $location->setPublication($publication);
+        $this->entityManager->persist($location);
+        $publication->setCategory($category);
 
         if (array_key_exists('image', $data)) {
             $this->imageCreator->createImage(['name' => $data['image'], 'publication' => $publication]);
@@ -69,6 +86,7 @@ class PublicationCreator
         $publication = $this->publicationRepository->findById($id);
 
         if ($publication) {
+            $this->entityManager->remove($publication->getLocation());
             $this->entityManager->remove($publication);
             $this->entityManager->flush();
 
@@ -91,9 +109,12 @@ class PublicationCreator
 
         if ($publication) {
             $publication->setName($data['title']);
-            $publication->setCategory($data['category']);
-            $publication->setLatitude($data['latitude']);
-            $publication->setLongitude($data['longitude']);
+            $publication->setDescription($data['description']);
+            $publication->setCategory($this->categoryRepository->findByName($data['category']));
+
+            $location = $publication->getLocation();
+            $location->setLatitude($data['latitude']);
+            $location->setLongitude($data['longitude']);
         }
 
         if (array_key_exists('image', $data) && $data['image']) {
@@ -103,6 +124,7 @@ class PublicationCreator
             $this->imageCreator->createImage(['name' => $data['image'], 'publication' => $publication]);
         }
 
+        $this->entityManager->persist($publication->getLocation());
         $this->entityManager->persist($publication);
         $this->entityManager->flush();
     }
@@ -112,11 +134,8 @@ class PublicationCreator
         $publication =  new Publication();
 
         $publication->setDescription($data['description'] ?? null);
-        $publication->setLongitude($data['longitude'] ?? null);
-        $publication->setLatitude($data['latitude'] ?? null);
         $publication->setName($data['title'] ?? 'default');
         $publication->setUser($data['user'] ?? null);
-        $publication->setCategory($data['category'] ?? 'veg');
 
         return $publication;
     }

@@ -50,9 +50,12 @@ class UserCreator
     private function createUserEntity(string $email, string $password, string $fullName, string $number): User
     {
         $user = new User();
+        $names = explode(' ', $fullName);
+
         $user->setEmail($email);
         $user->setPassword($password);
-        $user->setFullName($fullName);
+        $user->setName($names[0]);
+        $user->setSurname($names[1]);
         $user->setNumber($number);
 
 

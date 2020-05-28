@@ -24,9 +24,14 @@ class User
     protected $email;
 
     /**
-     * @ORM\Column(name="u_full_name", type="string")
+     * @ORM\Column(name="u_name", type="string")
      */
-    protected $fullName;
+    protected $name;
+
+    /**
+     * @ORM\Column(name="u_surname", type="string")
+     */
+    protected $surname;
 
     /**
      * @ORM\Column(name="u_password", type="string")
@@ -78,20 +83,37 @@ class User
     }
 
     /**
-     * @return string
+     * @return mixed
      */
-    public function getFullName(): string
+    public function getName()
     {
-        return $this->fullName;
+        return $this->name;
     }
 
     /**
-     * @param string $fullName
+     * @param mixed $name
      */
-    public function setFullName($fullName): void
+    public function setName($name): void
     {
-        $this->fullName = $fullName;
+        $this->name = $name;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getSurname()
+    {
+        return $this->surname;
+    }
+
+    /**
+     * @param mixed $surname
+     */
+    public function setSurname($surname): void
+    {
+        $this->surname = $surname;
+    }
+
 
     /**
      * @return string

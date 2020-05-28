@@ -6,9 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="Publication\Repository\CategoryRepository")
- * @ORM\Table(name="categories")
+ * @ORM\Table(name="subcategories")
  */
-class Category
+class Subcategory
 {
     /**
      * @ORM\Id

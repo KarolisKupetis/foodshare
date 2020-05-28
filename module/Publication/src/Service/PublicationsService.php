@@ -35,8 +35,8 @@ class PublicationsService
                $publications[$key]['distance'] = $this->getDistance(
                    $latitude,
                    $longitude,
-                   $single['latitude'],
-                   $single['longitude'],
+                   $single['location']['latitude'],
+                   $single['location']['longitude'],
                    'K'
                );
            }
